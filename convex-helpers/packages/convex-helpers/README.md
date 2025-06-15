@@ -4,26 +4,36 @@ A collection of useful code to complement the official packages.
 
 Table of contents:
 
-- [Custom Functions](#custom-functions)
-- [Relationship helpers](#relationship-helpers)
-- [Database triggers](#triggers)
-- [Action retry wrapper](#action-retries)
-- [Stateful migrations](#stateful-migrations)
-- [Rate limiting](#rate-limiting)
-- [Sessions](#session-tracking-via-client-side-sessionid-storage)
-- [Richer useQuery API](#richer-usequery)
-- [Row-level security](#row-level-security)
-- [Zod validation](#zod-validation)
-- [Hono for HTTP endpoints](#hono-for-advanced-http-endpoint-definitions)
-- [CRUD](#crud-utilities)
-- [Validator utilities](#validator-utilities)
-- [Filter db queries with JS](#filter)
-- [Manual pagination](#manual-pagination)
-- [Stream and combine data from multiple queries](#composable-querystreams)
-- [Query caching with ConvexQueryCacheProvider](#query-caching)
-- [TypeScript API Generator](#typescript-api-generation)
-- [OpenAPI Spec Generator](#open-api-spec-generation)
-- [CORS support for HttpRouter](#cors-support-for-httprouter)
+- [convex-helpers](#convex-helpers)
+  - [Custom Functions](#custom-functions)
+  - [Relationship helpers](#relationship-helpers)
+  - [Action retries](#action-retries)
+  - [Stateful migrations](#stateful-migrations)
+  - [Rate limiting](#rate-limiting)
+  - [Session tracking via client-side sessionID storage](#session-tracking-via-client-side-sessionid-storage)
+  - [Richer useQuery](#richer-usequery)
+  - [Row-level security](#row-level-security)
+  - [Zod Validation](#zod-validation)
+  - [Hono for advanced HTTP endpoint definitions](#hono-for-advanced-http-endpoint-definitions)
+  - [CRUD utilities](#crud-utilities)
+  - [Validator utilities](#validator-utilities)
+  - [Filter](#filter)
+  - [Manual Pagination](#manual-pagination)
+    - [Examples](#examples)
+    - [`paginator`: manual pagination with familiar syntax](#paginator-manual-pagination-with-familiar-syntax)
+  - [Composable QueryStreams](#composable-querystreams)
+    - [Example 1: Paginate all messages by a fixed set of authors](#example-1-paginate-all-messages-by-a-fixed-set-of-authors)
+    - [Example 2: Paginate all messages whose authors match a complex predicate.](#example-2-paginate-all-messages-whose-authors-match-a-complex-predicate)
+    - [Example 3: Order by a suffix of an index.](#example-3-order-by-a-suffix-of-an-index)
+    - [Example 4: Join tables.](#example-4-join-tables)
+  - [Query Caching](#query-caching)
+  - [TypeScript API Generation](#typescript-api-generation)
+  - [Open API Spec Generation](#open-api-spec-generation)
+  - [Triggers](#triggers)
+    - [What can you do with triggers?](#what-can-you-do-with-triggers)
+    - [Trigger semantics](#trigger-semantics)
+  - [CORS support for HttpRouter](#cors-support-for-httprouter)
+  - [Standard Schema support](#standard-schema)
 
 ## Custom Functions
 
@@ -652,9 +662,14 @@ In addition to `getPage`, convex-helpers provides a function
   but does not subscribe the query to the end cursor automatically.
 
 The syntax and interface for `paginator` is so similar to `.paginate` that it is
-nearly a drop-in replacement and can even be used with `usePaginatedQuery`.
+nearly a drop-in replacement and can even be used with `usePaginatedQuery`[^1].
 This makes it more suitable for non-reactive pagination usecases,
 such as iterating data in a mutation. Note: it supports `withIndex` but not `filter`.
+
+[^1]:
+    Note: if you want gapless pagination, use the `usePaginatedQuery` hook in
+    `"convex-helpers/react"`, or if you're also using the cached query helpers, pass
+    `customPagination: true` for that version.
 
 For more information on reactive pagination and end cursors, see
 https://stack.convex.dev/fully-reactive-pagination
@@ -712,11 +727,12 @@ and paginate the result.
   of documents, ordered by indexed fields.
 
 The cool thing about QueryStreams is you can make more QueryStreams from them,
-with operations equivalent to SQL's `UNION ALL`, `WHERE`, and
-`JOIN`. These operations preserve order, so the result
-is still a valid QueryStream. You can combine streams as much as you want, and
-finally treat it like a Convex query to get documents with `.first()`,
-`.collect()`, or `.paginate()`.
+with operations equivalent to SQL's `UNION ALL`, `WHERE`, and `JOIN`.
+These operations preserve order, so the result is still a valid QueryStream.
+You can combine streams as much as you want, and finally treat it like a
+Convex query to get documents with `.first()`, `.collect()`, or `.paginate()`.
+See [this Stack post](https://stack.convex.dev/translate-sql-into-convex-queries)
+for examples of translating SQL queries into Convex queries.
 
 For example, if you have a stream of "messages created by user1" and a stream
 of "messages created by user2", you can get a stream of
@@ -724,6 +740,9 @@ of "messages created by user2", you can get a stream of
 by creation time (or whatever the order is of the index you're using). You can
 then filter the merged stream to get a stream of "messages created by user1 or user2 that are unread". Then you
 can paginate the result.
+
+See [this Stack post](https://stack.convex.dev/merging-streams-of-convex-data)
+for more information.
 
 Concrete functions you can use:
 
@@ -736,9 +755,11 @@ Concrete functions you can use:
 - Once your stream is set up, you can get documents from it with the normal
   Convex query methods: `.first()`, `.collect()`, `.paginate()`, etc.
 
-Beware if using `.paginate()` with streams in reactive queries, as it has the
-same problems as [`paginator` and `getPage`](#manual-pagination): you need to
-pass in `endCursor` to prevent holes or overlaps between the pages.
+Note: if using `.paginate()` with streams in reactive queries, use the
+`usePaginatedQuery` hook from `"convex-helpers/react"`, or if you're also using
+the cached query helpers, pass `customPagination: true` for that version.
+It has the same behavior as [`paginator` and `getPage`](#manual-pagination) in
+that you need to pass in `endCursor` to prevent holes or overlaps between pages.
 
 ### Example 1: Paginate all messages by a fixed set of authors
 
@@ -910,19 +931,23 @@ server for some expiration period even after app `useQuery` hooks have all
 unmounted. This allows very fast reloading of unevicted values during
 navigation changes, view changes, etc.
 
+Note: unlike other forms of caching, subscription caching will mean strictly
+more bandwidth usage, because it will keep the subscription open even after
+the component unmounts. This is for optimizing the user experience, not database
+bandwidth.
+
 Related files:
 
 - [cache.ts](./react/cache.ts) re-exports things so you can import from a single convenient location.
 - [provider.tsx](./react/cache/provider.tsx) contains `ConvexQueryCacheProvider`,
   a configurable cache provider you put in your react app's root.
 - [hooks.ts](./react/cache/hooks.ts) contains cache-enabled drop-in
-  replacements for both `useQuery` and `useQueries` from `convex/react`.
+  replacements for `useQuery`, `usePaginatedQuery`, and `useQueries`.
 
 To use the cache, first make sure to put a `<ConvexQueryCacheProvider>`
 inside `<ConvexProvider>` in your react component tree:
 
-```jsx
-
+```tsx
 import { ConvexQueryCacheProvider } from "convex-helpers/react/cache";
 // For Next.js, import from "convex-helpers/react/cache/provider"; instead
 
@@ -956,7 +981,7 @@ This provider takes three optional props:
 Finally, you can utilize `useQuery` (and `useQueries`) just the same as
 their `convex/react` equivalents.
 
-```jsx
+```tsx
 import { useQuery } from "convex-helpers/react/cache";
 // For Next.js, import from "convex-helpers/react/cache/hooks"; instead
 
@@ -1151,7 +1176,19 @@ import { httpAction } from "./_generated/api";
 const http = httpRouter();
 
 // Your CORS router:
-const cors = corsRouter(http);
+const cors = corsRouter(
+  http,
+  // Optional configuration, can be omitted entirely
+  {
+    allowedOrigins: ["http://localhost:8080"], // Default: ["*"]
+    allowedMethods: ["GET", "POST"], // Defaults to route spec method
+    allowedHeaders: ["Content-Type"], // Default: ["Content-Type"]
+    exposedHeaders: ["Custom-Header"], // Default: ["Content-Range", "Accept-Ranges"]
+    allowCredentials: true, // Default: false
+    browserCacheMaxAge: 60, // Default: 86400 (1 day)
+    debug: true, // Default: false
+  },
+);
 
 cors.route({
   path: "/foo",
@@ -1182,4 +1219,26 @@ http.route({
 });
 // Export http (or cors.http)
 export default http;
+```
+
+## Standard Schema
+
+[Standard Schema](https://github.com/standard-schema/standard-schema)
+is a specification for validating data.
+To convert a Convex validator to a Standard Schema, use `toStandardSchema`:
+
+```typescript
+import { toStandardSchema } from "convex-helpers/standardSchema";
+
+const standardValidator = toStandardSchema(
+  v.object({
+    name: v.string(),
+    age: v.number(),
+  }),
+);
+
+standardValidator["~standard"].validate({
+  name: "John",
+  age: 30,
+});
 ```

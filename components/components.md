@@ -27,149 +27,37 @@ Each component is installed as its own independent library from NPM. Check out
 the component's README for installation and usage instructions. You can see the
 full directory on the [Convex website](https://convex.dev/components).
 
-<CardLink
-  className="convex-hero-card"
-  item={{
-    href: "https://convex.dev/components",
-    label: "Full Components Directory",
-  }}
-/>
+[Full Components Directory](https://convex.dev/components)
 
 ## Durable Functions
 
-<ComponentCardList
-  items={[
-    {
-      type: "link",
-      href: "https://www.convex.dev/components/workflow",
-      label: "Workflow",
-      description: "Async code flow as durable functions.",
-    },
-    {
-      type: "link",
-      href: "https://www.convex.dev/components/workpool",
-      label: "Workpool",
-      description: "Async durable function queue.",
-    },
-    {
-      type: "link",
-      href: "https://www.convex.dev/components/crons",
-      label: "Crons",
-      description: "Dynamic runtime cron management",
-    },
-    {
-      type: "link",
-      href: "https://www.convex.dev/components/retrier",
-      label: "Action Retrier",
-      description: "Retry failed external calls automatically",
-    },
-  ]}
-/>
+- [Workflow](https://www.convex.dev/components/workflow) - Async code flow as durable functions
+- [Workpool](https://www.convex.dev/components/workpool) - Async durable function queue
+- [Crons](https://www.convex.dev/components/crons) - Dynamic runtime cron management
+- [Action Retrier](https://www.convex.dev/components/retrier) - Retry failed external calls automatically
 
 ## Database
 
-<ComponentCardList
-  items={[
-    {
-      type: "link",
-      href: "https://www.convex.dev/components/sharded-counter",
-      label: "Sharded Counter",
-      description: "High-throughput counter operations",
-    },
-    {
-      type: "link",
-      href: "https://www.convex.dev/components/migrations",
-      label: "Migrations",
-      description: "Define and run migrations",
-    },
-    {
-      type: "link",
-      href: "https://www.convex.dev/components/aggregate",
-      label: "Aggregate",
-      description: "Efficient sums and counts",
-    },
-    {
-      type: "link",
-      href: "https://www.convex.dev/components/geospatial",
-      label: "Geospatial (Beta)",
-      description: "Store and search locations",
-    },
-  ]}
-/>
+- [Sharded Counter](https://www.convex.dev/components/sharded-counter) - High-throughput counter operations
+- [Migrations](https://www.convex.dev/components/migrations) - Define and run migrations
+- [Aggregate](https://www.convex.dev/components/aggregate) - Efficient sums and counts
+- [Geospatial (Beta)](https://www.convex.dev/components/geospatial) - Store and search locations
 
 ## Integrations
 
-<ComponentCardList
-  items={[
-    {
-      type: "link",
-      href: "https://www.convex.dev/components/cloudflare-r2",
-      label: "Cloudflare R2",
-      description: "Store and serve files",
-    },
-    {
-      type: "link",
-      href: "https://www.convex.dev/components/prosemirror-sync",
-      label: "Collaborative Text Editor Sync",
-      description: "Real-time collaborative text editing",
-    },
-    {
-      type: "link",
-      href: "https://www.convex.dev/components/push-notifications",
-      label: "Expo Push Notifications",
-      description: "Send mobile push notifications",
-    },
-    {
-      type: "link",
-      href: "https://www.convex.dev/components/twilio",
-      label: "Twilio SMS",
-      description: "Send and receive SMS messages",
-    },
-    {
-      type: "link",
-      href: "https://www.convex.dev/components/launchdarkly",
-      label: "LaunchDarkly Feature Flags",
-      description: "Sync feature flags with backend",
-    },
-    {
-      type: "link",
-      href: "https://www.convex.dev/components/polar",
-      label: "Polar",
-      description: "Add subscriptions and billing",
-    },
-  ]}
-/>
+- [Cloudflare R2](https://www.convex.dev/components/cloudflare-r2) - Store and serve files
+- [Collaborative Text Editor Sync](https://www.convex.dev/components/prosemirror-sync) - Real-time collaborative text editing
+- [Expo Push Notifications](https://www.convex.dev/components/push-notifications) - Send mobile push notifications
+- [Twilio SMS](https://www.convex.dev/components/twilio) - Send and receive SMS messages
+- [LaunchDarkly Feature Flags](https://www.convex.dev/components/launchdarkly) - Sync feature flags with backend
+- [Polar](https://www.convex.dev/components/polar) - Add subscriptions and billing
 
 ## Backend
 
-<ComponentCardList
-  items={[
-    {
-      type: "link",
-      href: "https://www.convex.dev/components/persistent-text-streaming",
-      label: "AI Agent",
-      description: "Define agents with tools and memory",
-    },
-    {
-      type: "link",
-      href: "https://www.convex.dev/components/persistent-text-streaming",
-      label: "Persistent Text Streaming",
-      description: "Stream and store text data",
-    },
-    {
-      type: "link",
-      href: "https://www.convex.dev/components/rate-limiter",
-      label: "Rate Limiter",
-      description: "Control resource usage rates",
-    },
-    {
-      type: "link",
-      href: "https://www.convex.dev/components/action-cache",
-      label: "Action Cache",
-      description: "Cache expensive external calls",
-    },
-  ]}
-/>
+- [AI Agent](https://www.convex.dev/components/persistent-text-streaming) - Define agents with tools and memory
+- [Persistent Text Streaming](https://www.convex.dev/components/persistent-text-streaming) - Stream and store text data
+- [Rate Limiter](https://www.convex.dev/components/rate-limiter) - Control resource usage rates
+- [Action Cache](https://www.convex.dev/components/action-cache) - Cache expensive external calls
 
 <Admonition type="caution" title="The component authoring APIs are in Beta">
   The underlying authoring APIs for components are still in flux. The Convex
